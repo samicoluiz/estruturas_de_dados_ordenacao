@@ -16,11 +16,18 @@ class Exemplo:
         return f"{self.vetor}"
 
     def gerar(self):
+        cursor = random.randint(0, self.qtd)
         match self.ordenacao:
-            case "desc":
-                pass
-            case "random":
-                pass
+            # descendente
+            case 1:
+                for i in range(self.qtd):
+                    cursor = random.randint(cursor, self.qtd + cursor)
+                    self.vetor.append(cursor)
+            # random
+            case 2:
+                for i in range(self.qtd):
+                    n = random.randint(0, self.qtd)
+                    self.vetor.append(n)
 
 
 class Ordenador:
@@ -33,4 +40,15 @@ class Ordenador:
         self.tempo_exec = None
 
     def ordenar(self):
-        pass
+        match self.algoritmo:
+            # bubblesort
+            case 1:
+                pass
+            # quicksort
+            case 2:
+                pass
+
+
+exemplo_teste = Exemplo(10, 2)
+exemplo_teste.gerar()
+print(exemplo_teste)
