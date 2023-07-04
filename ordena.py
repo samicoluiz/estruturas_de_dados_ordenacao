@@ -6,7 +6,7 @@ import timeit
 
 
 class Exemplo:
-
+    """Cria uma estrutura de dados contendo numeros inteiros aleatorios"""
     def __init__(self, qtd, ordenacao):
         self.qtd = qtd
         self.ordenacao = ordenacao
@@ -16,6 +16,7 @@ class Exemplo:
         return f"{self.vetor}"
 
     def gerar(self):
+        """Gera os números em ordem crescente ou aleatoriamente"""        
         cursor = random.randint(0, self.qtd)
         match self.ordenacao:
             # descendente
@@ -31,6 +32,7 @@ class Exemplo:
 
 
 class Ordenador:
+    """Objeto ordenador para um vetor de exemplo"""
 
     def __init__(self, exemplo, algoritmo):
         self.vetor = exemplo
@@ -40,6 +42,7 @@ class Ordenador:
         self.tempo_exec = None
 
     def ordenar(self):
+        """Ordena o algoritmo usando o algoritmo de bubblesort ou quicksort"""
         match self.algoritmo:
             # bubblesort
             case 1:
