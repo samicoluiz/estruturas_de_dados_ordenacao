@@ -58,7 +58,7 @@ class Ordenador:
         idx_troca = esquerda
         idx_pivo = direita
         for idx_cursor in range(esquerda, direita+1):
-            if vetor[idx_cursor] <= vetor[idx_pivo]:                
+            if vetor[idx_cursor] <= vetor[idx_pivo]:
                 if idx_cursor > idx_troca:
                     vetor[idx_cursor], vetor[idx_troca] = vetor[idx_troca], vetor[idx_cursor]
                 idx_troca += 1
@@ -66,13 +66,15 @@ class Ordenador:
         return idx_troca - 1
     
     def _particionar(self, pivo, esquerda, direita):
-        if len(self.vetor.vetor[esquerda:direita]) == 1:
+        if len(self.vetor.vetor[esquerda:direita+1]) == 1:
             return
         
-        pivo1 = self._rearranjo(esquerda, pivo-1)
-        pivo2 = self._rearranjo(pivo+1, direita)
-        self._particionar(pivo1, esquerda, pivo)
-        self._particionar(pivo2, pivo+1, direita+1)
+        if pivo > esquerda + 1: #Confirmação de que o pivo não é o primeiro elemento e já confirmando quando o valor for unitário.
+            pivo1 = self._rearranjo(esquerda, pivo-1)
+            self._particionar(pivo1, esquerda, pivo-1)
+        if pivo + 1 < direita: #Confirmação de que o pivo não é o último elemento e já confirmando quando o valor for unitário.
+            pivo2 = self._rearranjo(pivo+1, direita)
+            self._particionar(pivo2, pivo+1, direita)
 
     def ordenar(self):
         """Ordena o algoritmo usando o algoritmo de bubblesort ou quicksort"""
@@ -104,13 +106,14 @@ class Ordenador:
                 self._particionar(pivo, esquerda, direita)
 
 #############################################
-exemplo_teste = Exemplo(10, 2)
+exemplo_teste = Exemplo(5, 2)
 exemplo_teste.gerar()
 print(exemplo_teste)
 # ordenador = Ordenador(exemplo_teste, 1)
 # ordenador.ordenar()
 # print(exemplo_teste)
 # print(ordenador)
+# exemplo_teste.vetor = [2, 5, 5, 0, 0]
 ordenador2 = Ordenador(exemplo_teste, 2)
 ordenador2.ordenar()
 print(exemplo_teste)
