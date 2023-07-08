@@ -23,7 +23,7 @@ class Exemplo:
             case 1:
                 for i in range(self.qtd):
                     cursor = random.randint(cursor, self.qtd + cursor)
-                    self.vetor.append(cursor)
+                    self.vetor.insert(0, cursor)
             # random
             case 2:
                 for i in range(self.qtd):
@@ -45,13 +45,12 @@ class Ordenador:
         self.tempo_exec = 0
 
     def performance(self):
-        print(f"""
-        
+        return f"""        
         {"Algoritmo:":25} {self.algoritmo: <25}
         {"Número de comparações:":25} {self.n_comparacoes: <25}
         {"Número de trocas:":25} {self.n_trocas: <25}
         {"Tempo de execução (s):":25} {self.tempo_exec: <25}
-        """)
+        """
 
     def _rearranjo(self, exemplo, esquerda, direita):
         idx_troca = esquerda
@@ -109,35 +108,49 @@ class Ordenador:
 
 
 #############################################
-exemplo_teste = Exemplo(100, 2)
-exemplo_teste.gerar()
-print(exemplo_teste)
-# ordenador = Ordenador(exemplo_teste, 1)
-# ordenador.ordenar()
-# print(exemplo_teste)
-# print(ordenador)
-# exemplo_teste.vetor = [2, 5, 5, 0, 0]
-ordenador2 = Ordenador(2)
-ordenador2.ordenar(exemplo_teste)
-print(exemplo_teste)
-ordenador2.performance()
-
-#############################################
 algoritmo_dict = {1: "bubblesort",
                     2: "quicksort"}
 
+ordem_dict = {1: "descentente",
+              2: "aleatória"}
 
-print("""Este programa vai realizar três tarefas principais:
+print("""\nEste programa vai realizar três tarefas principais:
       * Gerar um vetor com com números aleatórios de tamanho n.
       * Organizar os elementos utilizando bubblesort ou quicksort (escolha do usuário).
       * Escrever no console a performance do algoritmo.""")
 print(f"{'':=<79}")
-print("Escolha o número de elementos do vetor desordenado (digite o número correspondente):")
+
+print("Escolha o número de elementos do vetor de teste (digite o número correspondente):")
 n_elementos = int(input(f"""      1. dez
       2. cem
       3. mil
       4. dez mil\nSua escolha: """))
+
+ordenacao = int(input(f"""O vetor deve ser totalmente aleatório, ou em ordem descendente?
+      1. Ordem descendente
+      2. Aleatório\nSua escolha: """))
+
 algoritmo = int(input(f"""Escolha o algoritmo de ordenação que deseja utilizar:
       1. Bubblesort
       2. Quicksort\nSua escolha: """))
-print(f"Você vai ordenar um vetor de tamanho {10**n_elementos} utilizando {algoritmo_dict[algoritmo]}.")
+
+print(f"Você vai ordenar um vetor de tamanho {10**n_elementos} organizado de maneira {ordem_dict[ordenacao]} utilizando {algoritmo_dict[algoritmo]}.")
+exemplo_teste = Exemplo(10**n_elementos, ordenacao)
+exemplo_teste.gerar()
+exemplo_teste_cp = Exemplo(10**n_elementos, ordenacao)
+exemplo_teste_cp.gerar()
+exemplo_teste_cp.vetor = exemplo_teste.vetor.copy()
+print("Vetor gerado:", exemplo_teste)
+ordenador = Ordenador(algoritmo)
+ordenador.ordenar(exemplo_teste)
+comparacao = int(input("Você deseja comparar a performance com o algoritmo alternativo?\n  0. Não\n  1. Sim\nSua escolha: "))
+
+print(f"{'':=<79}")
+print("Vetor ordenado:")
+print(exemplo_teste)
+print(f"\nPerformance:{ordenador.performance()}")
+
+if comparacao:
+  ordenador_comp = Ordenador(1 + (algoritmo%2))
+  ordenador_comp.ordenar(exemplo_teste_cp)
+  print(f"\nPerformance comparativa:{ordenador_comp.performance()}")
