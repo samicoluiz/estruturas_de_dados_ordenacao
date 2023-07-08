@@ -37,46 +37,45 @@ class Ordenador:
                       2: "quicksort"}
 
     """Objeto ordenador para um vetor de exemplo"""
-    def __init__(self, exemplo, escolha_algoritmo):
-        self.vetor = exemplo
+    def __init__(self,  escolha_algoritmo):
+        # self.vetor = exemplo
         self.algoritmo = Ordenador.algoritmo_dict[escolha_algoritmo]
         self.n_comparacoes = 0
         self.n_trocas = 0
         self.tempo_exec = 0
 
-    def __str__(self):
-        return f"""
-        {"Vetor ordenado:":25} {self.vetor.vetor}
+    def performance(self):
+        print(f"""
+        
         {"Algoritmo:":25} {self.algoritmo: <25}
         {"Número de comparações:":25} {self.n_comparacoes: <25}
         {"Número de trocas:":25} {self.n_trocas: <25}
         {"Tempo de execução (s):":25} {self.tempo_exec: <25}
-        """
+        """)
 
-    def _rearranjo(self, esquerda, direita):
-        vetor = self.vetor.vetor
+    def _rearranjo(self, exemplo, esquerda, direita):
         idx_troca = esquerda
         idx_pivo = direita
         for idx_cursor in range(esquerda, direita+1):
-            if vetor[idx_cursor] <= vetor[idx_pivo]:
+            if exemplo.vetor[idx_cursor] <= exemplo.vetor[idx_pivo]:
+                self.n_comparacoes += 1
                 if idx_cursor > idx_troca:
-                    vetor[idx_cursor], vetor[idx_troca] = vetor[idx_troca], vetor[idx_cursor]
+                    self.n_comparacoes += 1
+                    exemplo.vetor[idx_cursor], exemplo.vetor[idx_troca] = exemplo.vetor[idx_troca], exemplo.vetor[idx_cursor]
+                    self.n_trocas += 1
                 idx_troca += 1
-
         return idx_troca - 1
-    
-    def _particionar(self, pivo, esquerda, direita):
-        if len(self.vetor.vetor[esquerda:direita+1]) == 1:
-            return
-        
-        if pivo > esquerda + 1: #Confirmação de que o pivo não é o primeiro elemento e já confirmando quando o valor for unitário.
-            pivo1 = self._rearranjo(esquerda, pivo-1)
-            self._particionar(pivo1, esquerda, pivo-1)
-        if pivo + 1 < direita: #Confirmação de que o pivo não é o último elemento e já confirmando quando o valor for unitário.
-            pivo2 = self._rearranjo(pivo+1, direita)
-            self._particionar(pivo2, pivo+1, direita)
 
-    def ordenar(self):
+    def _particionar(self, exemplo, pivo, esquerda, direita):
+        if esquerda > direita:
+            return
+
+        pivo1 = self._rearranjo(exemplo, esquerda, pivo-1)
+        self._particionar(exemplo, pivo1, esquerda, pivo-1)
+        pivo2 = self._rearranjo(exemplo, pivo+1, direita)
+        self._particionar(exemplo, pivo2, pivo+1, direita)
+
+    def ordenar(self, exemplo):
         """Ordena o algoritmo usando o algoritmo de bubblesort ou quicksort"""
         match self.algoritmo:
             case "bubblesort":
@@ -90,23 +89,27 @@ class Ordenador:
                     if primeira_passagem:
                         primeira_passagem = False
                     troca = False
-                    for i in range(self.vetor.qtd - 1):
+                    for i in range(exemplo.qtd - 1):
                         self.n_comparacoes += 1
-                        if self.vetor.vetor[i] > self.vetor.vetor[i+1]:
-                            self.vetor.vetor[i], self.vetor.vetor[i+1] = self.vetor.vetor[i+1], self.vetor.vetor[i]
+                        if exemplo.vetor[i] > exemplo.vetor[i+1]:
+                            exemplo.vetor[i], exemplo.vetor[i+1] = exemplo.vetor[i+1], exemplo.vetor[i]
                             self.n_trocas += 1
                             troca = True
                 finish = timeit.default_timer()
                 self.tempo_exec = finish - start
 
             case "quicksort":
-                direita = self.vetor.qtd - 1
+                start = timeit.default_timer()
+                direita = exemplo.qtd - 1
                 esquerda = 0
-                pivo = self._rearranjo(esquerda, direita)
-                self._particionar(pivo, esquerda, direita)
+                pivo = self._rearranjo(exemplo, esquerda, direita)
+                self._particionar(exemplo, pivo, esquerda, direita)
+                finish = timeit.default_timer()
+                self.tempo_exec = finish - start
+
 
 #############################################
-exemplo_teste = Exemplo(5, 2)
+exemplo_teste = Exemplo(100, 2)
 exemplo_teste.gerar()
 print(exemplo_teste)
 # ordenador = Ordenador(exemplo_teste, 1)
@@ -114,7 +117,27 @@ print(exemplo_teste)
 # print(exemplo_teste)
 # print(ordenador)
 # exemplo_teste.vetor = [2, 5, 5, 0, 0]
-ordenador2 = Ordenador(exemplo_teste, 2)
-ordenador2.ordenar()
+ordenador2 = Ordenador(2)
+ordenador2.ordenar(exemplo_teste)
 print(exemplo_teste)
-print(ordenador2)
+ordenador2.performance()
+
+#############################################
+algoritmo_dict = {1: "bubblesort",
+                    2: "quicksort"}
+
+
+print("""Este programa vai realizar três tarefas principais:
+      * Gerar um vetor com com números aleatórios de tamanho n.
+      * Organizar os elementos utilizando bubblesort ou quicksort (escolha do usuário).
+      * Escrever no console a performance do algoritmo.""")
+print(f"{'':=<79}")
+print("Escolha o número de elementos do vetor desordenado (digite o número correspondente):")
+n_elementos = int(input(f"""      1. dez
+      2. cem
+      3. mil
+      4. dez mil\nSua escolha: """))
+algoritmo = int(input(f"""Escolha o algoritmo de ordenação que deseja utilizar:
+      1. Bubblesort
+      2. Quicksort\nSua escolha: """))
+print(f"Você vai ordenar um vetor de tamanho {10**n_elementos} utilizando {algoritmo_dict[algoritmo]}.")
