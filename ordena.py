@@ -3,6 +3,7 @@
 
 import random
 import timeit
+from collections import deque
 
 
 class Exemplo:
@@ -27,7 +28,7 @@ class Exemplo:
             # random
             case 2:
                 for i in range(self.qtd):
-                    n = random.randint(0, self.qtd)
+                    n = random.sample(range(self.qtd), self.qtd)
                     self.vetor.append(n)
 
 
@@ -51,28 +52,6 @@ class Ordenador:
         {"Número de trocas:":25} {self.n_trocas: <25}
         {"Tempo de execução (s):":25} {self.tempo_exec: <25}
         """
-
-    def _rearranjo(self, exemplo, esquerda, direita):
-        idx_troca = esquerda
-        idx_pivo = direita
-        for idx_cursor in range(esquerda, direita+1):
-            if exemplo.vetor[idx_cursor] <= exemplo.vetor[idx_pivo]:
-                self.n_comparacoes += 1
-                if idx_cursor > idx_troca:
-                    self.n_comparacoes += 1
-                    exemplo.vetor[idx_cursor], exemplo.vetor[idx_troca] = exemplo.vetor[idx_troca], exemplo.vetor[idx_cursor]
-                    self.n_trocas += 1
-                idx_troca += 1
-        return idx_troca - 1
-
-    def _particionar(self, exemplo, pivo, esquerda, direita):
-        if esquerda > direita:
-            return
-
-        pivo1 = self._rearranjo(exemplo, esquerda, pivo-1)
-        self._particionar(exemplo, pivo1, esquerda, pivo-1)
-        pivo2 = self._rearranjo(exemplo, pivo+1, direita)
-        self._particionar(exemplo, pivo2, pivo+1, direita)
 
     def ordenar(self, exemplo):
         """Ordena o algoritmo usando o algoritmo de bubblesort ou quicksort"""
@@ -99,10 +78,26 @@ class Ordenador:
 
             case "quicksort":
                 start = timeit.default_timer()
-                direita = exemplo.qtd - 1
-                esquerda = 0
-                pivo = self._rearranjo(exemplo, esquerda, direita)
-                self._particionar(exemplo, pivo, esquerda, direita)
+                if len(exemplo.vetor) <= 1:
+                    return exemplo.vetor
+                pilha = deque([(0, len(exemplo.vetor) - 1)])
+                while pilha:
+                    esquerda, direita = pilha.pop()
+                    self.n_comparacoes += 1
+                    if esquerda >= direita:
+                        continue
+                    pivo = exemplo.vetor[direita]
+                    i = esquerda - 1
+                    for j in range(esquerda, direita):
+                        self.n_comparacoes += 1
+                        if exemplo.vetor[j] <= pivo:
+                            i += 1
+                            exemplo.vetor[i], exemplo.vetor[j] = exemplo.vetor[j], exemplo.vetor[i]
+                            self.n_trocas += 1
+                    exemplo.vetor[i+1], exemplo.vetor[direita] = exemplo.vetor[direita], exemplo.vetor[i+1]
+                    self.n_trocas += 1
+                    pilha.append((esquerda, i))
+                    pilha.append((i+2, direita))
                 finish = timeit.default_timer()
                 self.tempo_exec = finish - start
 
@@ -151,6 +146,6 @@ print(exemplo_teste)
 print(f"\nPerformance:{ordenador.performance()}")
 
 if comparacao:
-  ordenador_comp = Ordenador(1 + (algoritmo%2))
-  ordenador_comp.ordenar(exemplo_teste_cp)
-  print(f"\nPerformance comparativa:{ordenador_comp.performance()}")
+    ordenador_comp = Ordenador(1 + (algoritmo%2))
+    ordenador_comp.ordenar(exemplo_teste_cp)
+    print(f"\nPerformance comparativa:{ordenador_comp.performance()}")
